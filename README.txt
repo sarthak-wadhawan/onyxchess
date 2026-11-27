@@ -1,6 +1,20 @@
 OnyxChess — plain HTML, CSS and JavaScript
 
-Open index.html in a browser. No npm, server or build step.
+### 1.
+
+![GIF 1](gifs/Adobe%20Express%20-%201.gif)
+
+### 2.
+
+![GIF 2](gifs/Adobe%20Express%20-%202.gif)
+
+### 3.
+
+![GIF 3](gifs/Adobe%20Express%20-%204.gif)
+
+### 4.
+
+![GIF 4](gifs/Adobe%20Express%20-%205.gif)
 
 index.html                  Homepage: edit its HTML directly.
 tutorial/<lesson>/index.html  Each lesson: edit headings, paragraphs and lists directly.
