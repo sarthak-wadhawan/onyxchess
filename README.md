@@ -18,9 +18,12 @@ this is a tutorial on how to build a chess engine and the chess game from scratc
 
 ![GIF 3](gifs/Adobe%20Express%20-%204.gif)
 
-### 4. Undo, reset, change color, and move history
+### 4. Undo, reset, change color
 
 ![GIF 4](gifs/Adobe%20Express%20-%205.gif)
+
+### 5. Move History
+![GIF 4](gifs/Adobe%20Express%20-%206.gif)
 
 ### Technologies Used
 1. Html
