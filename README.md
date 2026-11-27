@@ -2,7 +2,9 @@
 OnyxChess
 build a chess engine from scratch
 
+this website is to demonstrate another project i made @ https://github.com/sarthak-wadhawan/onyxchess
 
+this is a tutorial on how to build a chess engine and the chess game from scratch. [Live Link](https://genius-navy-zeta.vercel.app/)<br/>
 
 ### 1. Homepage
 
@@ -16,7 +18,7 @@ build a chess engine from scratch
 
 ![GIF 3](gifs/Adobe%20Express%20-%204.gif)
 
-### 4.
+### 4. Undo, reset, change color, and move history
 
 ![GIF 4](gifs/Adobe%20Express%20-%205.gif)
 
