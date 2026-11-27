@@ -1,4 +1,8 @@
-OnyxChess — plain HTML, CSS and JavaScript
+<img src="assets/logo.png" width="200" alt="OnyxChess Logo">
+OnyxChess
+build a chess engine from scratch
+
+
 
 ### 1.
 
