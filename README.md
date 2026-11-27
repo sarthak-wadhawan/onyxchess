@@ -22,3 +22,7 @@ this is a tutorial on how to build a chess engine and the chess game from scratc
 
 ![GIF 4](gifs/Adobe%20Express%20-%205.gif)
 
+### How to Run Locally
+
+Step 1 - Clone the repository in a new directory
+Step 2 - just open index.html, nothing else is required!
