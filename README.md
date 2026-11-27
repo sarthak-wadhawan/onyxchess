@@ -4,15 +4,15 @@ build a chess engine from scratch
 
 
 
-### 1.
+### 1. Homepage
 
 ![GIF 1](gifs/Adobe%20Express%20-%201.gif)
 
-### 2.
+### 2. Tutorials
 
 ![GIF 2](gifs/Adobe%20Express%20-%202.gif)
 
-### 3.
+### 3. Play chess
 
 ![GIF 3](gifs/Adobe%20Express%20-%204.gif)
 
