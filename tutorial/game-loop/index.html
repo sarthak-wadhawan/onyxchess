@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Game loop | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Game loop
+    </h1>
+    <p>
+     All the individual components are ready. We now need to connect them into a program that responds to a person, applies the rules and knows when to stop. The game loop in main.cpp coordinates the modules without duplicating their logic.
+    </p>
+    <h2 id="decide-whose-turn-it-is">
+     Decide whose turn it is
+    </h2>
+    <p>
+     Initialize the board once. At the beginning of every iteration, display the current position and generate its legal moves. If none exist, check whether the current king is attacked. Report checkmate or stalemate and exit the loop. Otherwise, branch according to the active color.
+    </p>
+    <h2 id="accept-and-validate-the-player-s-move">
+     Accept and validate the player's move
+    </h2>
+    <p>
+     White is controlled by the human in the supplied program. The user enters a source and destination such as e2e4. For promotion, an additional character specifies the desired piece.
+    </p>
+    <ol>
+     <li>
+      Read the input and stop if the user requests to quit or the input stream closes.
+     </li>
+     <li>
+      Check the input length and convert the source and destination into square indices.
+     </li>
+     <li>
+      Search the existing legal move list for the requested action, including the promotion choice when required.
+     </li>
+     <li>
+      If no match exists, explain that the move is invalid and return to the same turn without changing the board.
+     </li>
+     <li>
+      If there is a match, pass the validated Move record to make_move.
+     </li>
+    </ol>
+    <p>
+     Matching against the generated list is safer than reconstructing special flags from raw user input.
+    </p>
+    <h2 id="let-the-computer-respond">
+     Let the computer respond
+    </h2>
+    <div class="lesson-split">
+     <div>
+      <p>
+       On Black's turn, call find_best_move with the configured depth. The native teaching engine uses depth four. Record how long the search took, display the move, score and node count, and apply the selected move. The board executor switches the active side automatically.
+      </p>
+      <p>
+       The demonstration here lets you play both sides manually, so you can observe the state transitions independently of the search. Move a white pawn, then a black pawn. White becomes active again. Undo or reset to repeat the experiment.
+      </p>
+     </div>
+     <figure class="chess-demo" data-chess-demo='{"position":"start","mode":"legal"}'>
+      <h3 class="demo-title" hidden="">
+      </h3>
+      <div class="demo-controls" data-evaluation-controls="" hidden="">
+       <label>
+        Piece
+        <select data-piece="">
+         <option value="P">
+          Pawn
+         </option>
+         <option selected="" value="N">
+          Knight
+         </option>
+         <option value="B">
+          Bishop
+         </option>
+         <option value="R">
+          Rook
+         </option>
+         <option value="Q">
+          Queen
+         </option>
+         <option value="K">
+          King
+         </option>
+        </select>
+       </label>
+       <label>
+        Phase
+        <select data-phase="">
+         <option value="mg">
+          Middlegame
+         </option>
+         <option value="eg">
+          Endgame
+         </option>
+        </select>
+       </label>
+      </div>
+      <div class="board-frame">
+       <div aria-hidden="true" class="board-ranks">
+        <span>
+         8
+        </span>
+        <span>
+         7
+        </span>
+        <span>
+         6
+        </span>
+        <span>
+         5
+        </span>
+        <span>
+         4
+        </span>
+        <span>
+         3
+        </span>
+        <span>
+         2
+        </span>
+        <span>
+         1
+        </span>
+       </div>
+       <div aria-label="Chess demonstration" class="demo-board" role="group">
+        <div class="fallback-board">
+        </div>
+       </div>
+       <div aria-hidden="true" class="board-files">
+        <span>
+         a
+        </span>
+        <span>
+         b
+        </span>
+        <span>
+         c
+        </span>
+        <span>
+         d
+        </span>
+        <span>
+         e
+        </span>
+        <span>
+         f
+        </span>
+        <span>
+         g
+        </span>
+        <span>
+         h
+        </span>
+       </div>
+      </div>
+      <div class="demo-controls">
+       <button data-reset="" type="button">
+        Reset
+       </button>
+       <button data-undo="" disabled="" type="button">
+        Undo
+       </button>
+       <label data-depth-control="" hidden="">
+        Depth
+        <select data-depth="">
+         <option value="1">
+          1
+         </option>
+         <option selected="" value="2">
+          2
+         </option>
+        </select>
+       </label>
+       <button data-analyze="" hidden="" type="button">
+        Run search
+       </button>
+      </div>
+      <figcaption>
+       <p aria-live="polite" data-board-status="">
+        Select a square.
+       </p>
+       <p data-caption="" hidden="">
+       </p>
+      </figcaption>
+      <div class="promotion" data-promotion="" hidden="">
+       <p>
+        Promote to:
+       </p>
+       <button data-promote="q" type="button">
+        Queen
+       </button>
+       <button data-promote="r" type="button">
+        Rook
+       </button>
+       <button data-promote="b" type="button">
+        Bishop
+       </button>
+       <button data-promote="n" type="button">
+        Knight
+       </button>
+       <button data-promote="cancel" type="button">
+        Cancel
+       </button>
+      </div>
+      <div class="game-detail" data-game-detail="">
+       <p aria-live="polite" data-detail="">
+       </p>
+      </div>
+     </figure>
+    </div>
+    <h2 id="know-when-to-stop">
+     Know when to stop
+    </h2>
+    <p>
+     Only the side whose turn it is can be declared checkmated or stalemated. A player temporarily unable to move immediately after making their own move does not end the game. The next loop iteration checks the new active side.
+    </p>
+    <p>
+     The native teaching program handles checkmate and stalemate. Repetition and other draw rules need additional history or state; the browser game uses its own rules implementation for these. Do not assume the two implementations are identical.
+    </p>
+    <h2 id="test-the-complete-loop">
+     Test the complete loop
+    </h2>
+    <p>
+     Try a valid opening move, an invalid move and a promotion. Invalid input must leave the position unchanged, valid input must change the turn, and promotion must preserve the chosen piece. The native program also accepts quit to end the session.
+    </p>
+    <p>
+     <a href="../../play/index.html">
+      Play against the browser AI
+     </a>
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../tutorial/best-move/index.html">
+      ← Finding the best move
+     </a>
+     <a href="../../tutorial/optimization/index.html">
+      Engine optimization →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#decide-whose-turn-it-is">
+        Decide whose turn it is
+       </a>
+      </li>
+      <li>
+       <a href="#accept-and-validate-the-player-s-move">
+        Accept and validate the player's move
+       </a>
+      </li>
+      <li>
+       <a href="#let-the-computer-respond">
+        Let the computer respond
+       </a>
+      </li>
+      <li>
+       <a href="#know-when-to-stop">
+        Know when to stop
+       </a>
+      </li>
+      <li>
+       <a href="#test-the-complete-loop">
+        Test the complete loop
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../../js/chess.js">
+  </script>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>

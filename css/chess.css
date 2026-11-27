@@ -1,0 +1,377 @@
+/* Board and shared demonstration controls */
+.chess-demo { margin: 0; min-width: 0; }
+.board-frame {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-rows: auto 24px;
+  gap: 0 6px;
+}
+.board-ranks {
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  align-items: center;
+  text-align: center;
+}
+.board-files {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  text-align: center;
+  align-items: end;
+}
+.board-ranks, .board-files { font: 12px var(--mono); color: var(--muted); }
+.demo-board { width: 100%; aspect-ratio: 1; position: relative; outline: 1px solid #77583f; }
+.fallback-board {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+}
+.demo-square {
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.light-square { background: var(--board-light); }
+.dark-square { background: var(--board-dark); }
+.demo-square .piece {
+  font-family: 'DejaVu Sans', 'Segoe UI Symbol', serif;
+  color: #fffdf5;
+  -webkit-text-stroke: 1.5px #202020;
+  paint-order: stroke fill;
+  text-shadow: 0 1px 1px #202020;
+  font-size: clamp(20px, 3.3vw, 48px);
+  line-height: 1;
+  pointer-events: none;
+}
+.demo-square.black-piece .piece { color: #161616; -webkit-text-stroke: .6px #fffdf5; text-shadow: none; }
+.demo-board [data-square] { position: relative; cursor: default; }
+.demo-board .is-last { box-shadow: inset 0 0 0 3px #647c8b; }
+.demo-board .is-origin { box-shadow: inset 0 0 0 3px var(--accent); }
+.demo-board .is-target { cursor: pointer; }
+.demo-board .is-target::after {
+  content: '';
+  position: absolute;
+  width: 23%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: .72;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.demo-board .is-target:hover::after { opacity: 1; }
+.demo-board .has-piece.is-target::after { width: 85%; background: transparent; border: 3px solid var(--accent); }
+.demo-board [data-square]:focus-visible { z-index: 2; outline: 3px solid var(--accent); outline-offset: -3px; }
+
+.chess-demo .demo-title { font-size: 17px; line-height: 1.3; margin: 0 0 14px; }
+.chess-demo figcaption { font-size: 14px; line-height: 1.5; color: var(--ink); }
+.chess-demo figcaption p { margin: 8px 0 0; }
+.demo-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px;  margin-left: 25px;
+ }
+.demo-controls button, .promotion button, .demo-controls select {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 9px 12px;
+  min-height: 44px;
+  border-radius: 0;
+  /* margin-left: 25px; */
+}
+.demo-controls p{  margin-left: 25px;
+}
+.demo-controls button:hover, .promotion button:hover { border-color: var(--accent); color: var(--accent); }
+.demo-controls button:disabled { opacity: .45; cursor: default; }
+.demo-controls label { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.game-detail p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 13px/1.6 var(--mono);
+  margin: 10px 0;
+  max-height: 14em;
+  overflow: auto;
+}
+.promotion { padding: 12px 0; border-top: 1px solid var(--line); }
+
+/* PeSTO evaluation heatmap */
+.heat-number {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  font: clamp(9px, 1.1vw, 13px) var(--mono);
+  font-weight: bold;
+  pointer-events: none;
+}
+.heat-plus::before, .heat-minus::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: var(--heat);
+  pointer-events: none;
+}
+.heat-plus::before { background: #7a9ebf; }
+.heat-minus::before { background: #be8862; }
+.heat-number, .demo-square .piece { z-index: 1; }
+
+/* Minimax and alpha-beta search tree */
+.tree-demo { padding: 22px 0; border-block: 1px solid var(--line); margin: 28px 0; }
+.tree-root { width: max-content; margin: 0 auto 26px; border: 1px solid var(--ink); padding: 8px 16px; font: 15px var(--mono); }
+.tree-branches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; position: relative; }
+.tree-branches::before { content: ''; position: absolute; top: -13px; left: 16%; right: 16%; border-top: 1px solid var(--line); }
+.tree-branch { text-align: center; min-width: 0; position: relative; }
+.tree-branch::before { content: ''; position: absolute; top: -13px; height: 13px; left: 50%; border-left: 1px solid var(--line); }
+.tree-branch > div:first-child { font: 13px var(--mono); padding: 8px; border: 1px solid var(--line); }
+.tree-leaves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; margin-top: 12px; }
+.tree-leaves label { min-width: 0; padding: 3px; background: #e7ebdf; }
+.tree-leaves input {
+  width: 100%;
+  min-width: 0;
+  appearance: textfield;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  color: var(--ink);
+  font: 13px var(--mono);
+  padding: 7px 0;
+}
+.tree-leaves input::-webkit-inner-spin-button { appearance: none; }
+.tree-leaves .visited { background: #b7cfe1; }
+.tree-leaves .skipped { opacity: .45; text-decoration: line-through; }
+[data-tree-status] { font: 13px/1.5 var(--mono); margin-top: 12px; }
+@media (max-width: 850px) {
+  .demo-square .piece { font-size: clamp(24px, 7vw, 48px); }
+}
+@media (max-width: 800px) {
+  .chess-demo { width: 100%; max-width: 450px; }
+}
+@media (max-width: 520px) {
+  .tree-branches { gap: 5px; }
+  .tree-branch > div:first-child { font-size: 11px; padding: 5px; }
+}
+
+/* Piece size follows the square, not the viewport. */
+.demo-square { container-type: inline-size; }
+.demo-square .piece { font-size: 82cqi; }
+.docs-main .lesson-split .demo-square .piece { font-size: 82cqi; }
+@keyframes reveal-move {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.4);
+    }
+
+    to {
+        opacity: 0.72;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.onyx-hero .is-target::after {
+    animation: reveal-move 150ms ease-out backwards;
+}
+
+.onyx-hero .is-target:nth-child(2 of .is-target)::after {
+    animation-delay: 40ms;
+}
+
+.onyx-hero .is-target:nth-child(3 of .is-target)::after {
+    animation-delay: 80ms;
+}
+
+.onyx-hero .is-target:nth-child(4 of .is-target)::after {
+    animation-delay: 120ms;
+}
+
+.onyx-hero .is-target:nth-child(5 of .is-target)::after {
+    animation-delay: 160ms;
+}
+
+.onyx-hero .is-target:nth-child(6 of .is-target)::after {
+    animation-delay: 200ms;
+}
+
+.onyx-hero .is-target:nth-child(7 of .is-target)::after {
+    animation-delay: 240ms;
+}
+
+.onyx-hero .is-target:nth-child(8 of .is-target)::after {
+    animation-delay: 280ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .onyx-hero .is-target::after {
+        animation: none;
+    }
+}
+
+/* Play chess: a board and a compact, independently scrolling move history. */
+.play-page .docs-main > .chess-demo {
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(0, 520px) minmax(200px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.game-board-column { min-width: 0; }
+.play-page .game-controls { margin: 12px 0 8px 26px; }
+.play-page .chess-demo figcaption,
+.play-page .game-detail { margin-left: 26px; }
+.play-page .game-detail p:empty { display: none; }
+.play-page .demo-board[aria-disabled="true"] button { cursor: default; }
+.move-panel, .game-dialog {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 16px;
+  box-shadow: 0 3px 12px #1521260a;
+  min-width: 0;
+}
+.history-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  font-weight: 700;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 0 0 8px;
+}
+.history-heading:hover { color: var(--accent); }
+.move-table-heading, .move-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.move-table-heading {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.move-table-heading span:not(:first-child) { text-align: center; }
+.move-list { max-height: 370px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.move-row { min-height: 40px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.move-row > span { padding-left: 3px; color: var(--muted); }
+.move-row button {
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink);
+  text-align: center;
+  padding: 4px 2px;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.move-row button:hover { background: #e3e8e0; }
+.move-row button[aria-current="true"] { background: var(--accent); color: white; }
+.move-list .empty-history { color: var(--muted); padding: 10px 0; margin: 0; font-size: 13px; }
+.history-navigation { display: flex; gap: 6px; align-items: center; margin: 12px 0 12px 26px; }
+.history-navigation button, .dialog-heading button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  padding: 4px 8px;
+  font-size: 20px;
+  line-height: 1;
+}
+.history-navigation button:disabled { opacity: .35; cursor: default; }
+.history-navigation button:not(:disabled):hover, .dialog-heading button:hover { background: #e3e8e0; }
+.game-result { padding: 14px 12px; margin-bottom: 12px; background: #dbe6ef; color: var(--accent); border-radius: 8px; }
+.game-result strong { display: block; font-size: 22px; line-height: 1.2; letter-spacing: -.025em; }
+.game-result span { display: block; margin-top: 4px; font-size: 13px; color: var(--ink); }
+.game-dialog {
+  width: min(400px, calc(100% - 32px));
+  max-height: 85vh;
+  max-height: 85dvh;
+  overflow: auto;
+  box-shadow: 0 16px 45px #15212626;
+}
+.game-dialog::backdrop { background: #15212655; }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.play-page .dialog-heading h2 { font-size: 20px; margin: 0; }
+.dialog-heading button { border: 0; }
+.history-dialog { margin: auto clamp(16px, 5vw, 72px) auto auto; }
+.history-dialog .history-navigation { margin-left: 0; justify-content: space-between; }
+.history-dialog .move-list { max-height: min(370px, 42vh); }
+.dialog-new-game {
+  width: 100%;
+  min-height: 44px;
+  background: var(--accent);
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  font-weight: 600;
+}
+.settings-fields { display: grid; gap: 16px; }
+.settings-fields label { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.settings-fields select { min-height: 44px; min-width: 120px; padding: 8px; border: 1px solid var(--line); border-radius: 7px; font: inherit; color: var(--ink); background: var(--paper); }
+@media (max-width: 650px) {
+  .play-page .docs-main > .chess-demo { grid-template-columns: 1fr; max-width: 450px; gap: 16px; }
+  .move-list { max-height: 230px; }
+  .history-dialog { margin: auto auto 12px; }
+}
+
+
+/* Play chess: show promotion directly beneath move history. */
+.game-side-column {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.play-page .promotion-panel {
+  padding: 16px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.play-page .promotion-panel h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  color: var(--accent);
+}
+.promotion-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.play-page .promotion-panel button {
+  border-radius: 6px;
+  font-weight: 600;
+  min-width: 0;
+}
+.play-page .promotion-panel button[data-promote="q"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.play-page .promotion-panel button[data-promote="cancel"] {
+  width: 100%;
+  margin-top: 8px;
+  background: transparent;
+}
+.play-page .promotion-panel button:hover {
+  border-color: var(--accent);
+  text-decoration: underline;
+}

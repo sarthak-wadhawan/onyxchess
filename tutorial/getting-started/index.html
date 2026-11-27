@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Getting started | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a aria-current="page" href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a aria-current="page" href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Getting started
+    </h1>
+    <p>
+     A chess engine has four jobs: represent the current situation, find possible actions, judge their consequences and choose an action. We will build those jobs separately so that each can be understood and tested before connecting them.
+    </p>
+    <p>
+     The implementation is in C++, but the design works in other languages. The interactive examples are independent JavaScript demonstrations. You only need to understand variables, conditions, loops and functions to get started.
+    </p>
+    <h2 id="divide-the-problem">
+     Divide the problem
+    </h2>
+    <p>
+     Imagine putting every chess rule and decision into one function. Changing how we value a knight could accidentally break castling. Instead, give each part a clear responsibility.
+    </p>
+    <table>
+     <thead>
+      <tr>
+       <th>
+        File
+       </th>
+       <th>
+        What it owns
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <td>
+        types.h
+       </td>
+       <td>
+        The shared representation of pieces, positions and moves
+       </td>
+      </tr>
+      <tr>
+       <td>
+        board.h / board.cpp
+       </td>
+       <td>
+        Reading and changing a position
+       </td>
+      </tr>
+      <tr>
+       <td>
+        movegen.h / movegen.cpp
+       </td>
+       <td>
+        Finding actions that obey the rules
+       </td>
+      </tr>
+      <tr>
+       <td>
+        eval.h / eval.cpp
+       </td>
+       <td>
+        Assigning a numerical value to a position
+       </td>
+      </tr>
+      <tr>
+       <td>
+        search.h / search.cpp
+       </td>
+       <td>
+        Looking ahead and selecting a move
+       </td>
+      </tr>
+      <tr>
+       <td>
+        main.cpp
+       </td>
+       <td>
+        Managing the interaction between the player and engine
+       </td>
+      </tr>
+      <tr>
+       <td>
+        makefile
+       </td>
+       <td>
+        Building the executable
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <h2 id="how-the-modules-work-together">
+     How the modules work together
+    </h2>
+    <ol>
+     <li>
+      The game loop asks the board for its current state.
+     </li>
+     <li>
+      The move generator finds legal actions from that state.
+     </li>
+     <li>
+      Search explores those actions on temporary copies of the board.
+     </li>
+     <li>
+      Evaluation gives each position a score.
+     </li>
+     <li>
+      The game loop applies the selected action to the real board.
+     </li>
+    </ol>
+    <p>
+     The board does not need to know how search works. The evaluator does not need to know how the player entered a move. This separation is what makes later changes manageable.
+    </p>
+    <h2 id="build-the-program">
+     Build the program
+    </h2>
+    <p>
+     A compiler translates each implementation file into an object file; a linker combines these files into an executable. The Makefile records that process so it can be repeated consistently. Our project uses C++17, optimization and compiler warnings. If your Makefile does not track header dependencies, perform a clean rebuild after changing headers.
+    </p>
+    <p>
+     Begin with a small program that displays a message. Run make, then run the generated chess executable. If the message appears, the toolchain works. Add the other modules one at a time rather than debugging everything at once.
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../index.html">
+      ← Build a chess engine from scratch.
+     </a>
+     <a href="../../tutorial/board-representation/index.html">
+      Board representation →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#divide-the-problem">
+        Divide the problem
+       </a>
+      </li>
+      <li>
+       <a href="#how-the-modules-work-together">
+        How the modules work together
+       </a>
+      </li>
+      <li>
+       <a href="#build-the-program">
+        Build the program
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>

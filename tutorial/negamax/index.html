@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Minimax and Negamax | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Minimax and Negamax
+    </h1>
+    <p>
+     A good-looking move can be a trap. Capturing a piece may allow the opponent to capture something more valuable immediately afterward. Evaluating the current board alone cannot reveal that consequence. Search explores possible future decisions before choosing the next action.
+    </p>
+    <h2 id="build-a-game-tree">
+     Build a game tree
+    </h2>
+    <p>
+     A tree represents positions as nodes and moves as branches between them. The root is the current position. Every legal move leads to a child position, where the opposing player can respond. A ply is one move by one side; four plies include two moves per player.
+    </p>
+    <p>
+     We cannot explore an entire chess game in practice. A depth limit tells the engine when to stop expanding a branch and estimate the remaining position using evaluation.
+    </p>
+    <h2 id="minimax-assume-the-opponent-responds-well">
+     Minimax: assume the opponent responds well
+    </h2>
+    <p>
+     Consider a two-player zero-sum game in which a larger score is better for MAX and worse for MIN. MAX chooses the largest available value; MIN chooses the smallest. A leaf is a position we evaluate without exploring further.
+    </p>
+    <figure class="tree-demo" data-tree="full">
+     <div class="tree-root">
+      MAX
+      <output data-root-score="">
+       ?
+      </output>
+     </div>
+     <div class="tree-branches">
+      <div class="tree-branch">
+       <div>
+        MIN A
+        <output data-branch="0">
+         ?
+        </output>
+       </div>
+       <div class="tree-leaves">
+        <label>
+         <input aria-label="Branch 1, leaf 1" data-leaf="0" max="100" min="-100" type="number" value="3"/>
+        </label>
+        <label>
+         <input aria-label="Branch 1, leaf 2" data-leaf="1" max="100" min="-100" type="number" value="5"/>
+        </label>
+        <label>
+         <input aria-label="Branch 1, leaf 3" data-leaf="2" max="100" min="-100" type="number" value="6"/>
+        </label>
+       </div>
+      </div>
+      <div class="tree-branch">
+       <div>
+        MIN B
+        <output data-branch="1">
+         ?
+        </output>
+       </div>
+       <div class="tree-leaves">
+        <label>
+         <input aria-label="Branch 2, leaf 1" data-leaf="3" max="100" min="-100" type="number" value="2"/>
+        </label>
+        <label>
+         <input aria-label="Branch 2, leaf 2" data-leaf="4" max="100" min="-100" type="number" value="9"/>
+        </label>
+        <label>
+         <input aria-label="Branch 2, leaf 3" data-leaf="5" max="100" min="-100" type="number" value="8"/>
+        </label>
+       </div>
+      </div>
+      <div class="tree-branch">
+       <div>
+        MIN C
+        <output data-branch="2">
+         ?
+        </output>
+       </div>
+       <div class="tree-leaves">
+        <label>
+         <input aria-label="Branch 3, leaf 1" data-leaf="6" max="100" min="-100" type="number" value="4"/>
+        </label>
+        <label>
+         <input aria-label="Branch 3, leaf 2" data-leaf="7" max="100" min="-100" type="number" value="7"/>
+        </label>
+        <label>
+         <input aria-label="Branch 3, leaf 3" data-leaf="8" max="100" min="-100" type="number" value="1"/>
+        </label>
+       </div>
+      </div>
+     </div>
+     <p aria-live="polite" data-tree-status="">
+     </p>
+     <div class="demo-controls">
+      <button data-back="">
+       Back
+      </button>
+      <button data-next="">
+       Next
+      </button>
+      <button data-run="">
+       Run all
+      </button>
+      <button data-reset-tree="">
+       Restart trace
+      </button>
+      <label>
+       <input data-reverse="" type="checkbox"/>
+       Reverse order
+      </label>
+     </div>
+    </figure>
+    <p>
+     In this example the root has three choices. Branch A has leaf scores 3, 5 and 6, so MIN can force 3. Branch B has 2, 9 and 8, so MIN can force 2. Branch C has 4, 7 and 1, so MIN can force 1. MAX chooses A because 3 is the best guaranteed result. Run the trace and change one leaf to see how its score propagates upward.
+    </p>
+    <h2 id="negamax-remove-the-duplicated-logic">
+     Negamax: remove the duplicated logic
+    </h2>
+    <p>
+     Minimax describes two different operations, maximizing and minimizing. In a zero-sum game, a score of +5 for one side means -5 for the other. Minimizing the opponent's score is therefore equivalent to maximizing our own score after reversing the sign.
+    </p>
+    <p>
+     This is why the engine needs only one recursive search function, negamax. Every call treats the side currently moving as the maximizing player. The child's score is expressed from the opponent's perspective; negate that score when it comes back to the parent.
+    </p>
+    <h2 id="how-negamax-works">
+     How negamax works
+    </h2>
+    <ol>
+     <li>
+      Generate the legal moves for the current position.
+     </li>
+     <li>
+      If the list is empty, return a loss score for checkmate or zero for stalemate. Check this before applying the depth limit.
+     </li>
+     <li>
+      If the remaining depth is zero, return the positional evaluation.
+     </li>
+     <li>
+      Otherwise, for each legal move, copy the position and apply the move.
+     </li>
+     <li>
+      Call the same search function on the resulting position with one less ply remaining. Negate the returned score.
+     </li>
+     <li>
+      Retain the highest result and return it to the caller.
+     </li>
+    </ol>
+    <p>
+     The base cases stop recursion. Copying each board prevents one branch from changing the state of another. The actual project also uses a mate-distance adjustment and alpha-beta bounds, which we introduce next.
+    </p>
+    <h2 id="why-search-becomes-expensive">
+     Why search becomes expensive
+    </h2>
+    <p>
+     If each position has roughly 20 legal moves, two plies produce about 400 leaf positions; four plies produce about 160,000. The real branching factor varies, but the growth explains why searching deeper becomes expensive. We need a way to avoid evaluating branches that cannot affect the decision.
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../tutorial/position-evaluation/index.html">
+      ← Position evaluation
+     </a>
+     <a href="../../tutorial/alpha-beta/index.html">
+      Alpha-beta pruning →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#build-a-game-tree">
+        Build a game tree
+       </a>
+      </li>
+      <li>
+       <a href="#minimax-assume-the-opponent-responds-well">
+        Minimax: assume the opponent responds well
+       </a>
+      </li>
+      <li>
+       <a href="#negamax-remove-the-duplicated-logic">
+        Negamax: remove the duplicated logic
+       </a>
+      </li>
+      <li>
+       <a href="#how-negamax-works">
+        How negamax works
+       </a>
+      </li>
+      <li>
+       <a href="#why-search-becomes-expensive">
+        Why search becomes expensive
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../../js/chess.js">
+  </script>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>

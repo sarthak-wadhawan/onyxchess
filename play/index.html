@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Play chess | OnyxChess
+  </title>
+  <link href="../assets/logo.png" rel="icon"/>
+  <link href="../css/style.css" rel="stylesheet"/>
+  <link href="../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body class="play-page" data-root="../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../index.html">
+     <img alt="" height="36" src="../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Play chess
+    </h1>
+    <p>
+     Choose your color and search depth in Settings. If you choose Black, the computer moves first. Select a piece and a highlighted destination. Undo reverses a full turn; Reset starts a new game with your selected color.
+    </p>
+    <figure class="chess-demo" data-chess-demo='{"position":"start","mode":"game"}'>
+     <h3 class="demo-title" hidden="">
+     </h3>
+     <div class="demo-controls" data-evaluation-controls="" hidden="">
+      <label>
+       Piece
+       <select data-piece="">
+        <option value="P">
+         Pawn
+        </option>
+        <option selected="" value="N">
+         Knight
+        </option>
+        <option value="B">
+         Bishop
+        </option>
+        <option value="R">
+         Rook
+        </option>
+        <option value="Q">
+         Queen
+        </option>
+        <option value="K">
+         King
+        </option>
+       </select>
+      </label>
+      <label>
+       Phase
+       <select data-phase="">
+        <option value="mg">
+         Middlegame
+        </option>
+        <option value="eg">
+         Endgame
+        </option>
+       </select>
+      </label>
+     </div>
+     <div class="game-board-column">
+     <div class="board-frame">
+      <div aria-hidden="true" class="board-ranks">
+       <span>
+        8
+       </span>
+       <span>
+        7
+       </span>
+       <span>
+        6
+       </span>
+       <span>
+        5
+       </span>
+       <span>
+        4
+       </span>
+       <span>
+        3
+       </span>
+       <span>
+        2
+       </span>
+       <span>
+        1
+       </span>
+      </div>
+      <div aria-label="Chess demonstration" class="demo-board" role="group">
+       <div class="fallback-board">
+       </div>
+      </div>
+      <div aria-hidden="true" class="board-files">
+       <span>
+        a
+       </span>
+       <span>
+        b
+       </span>
+       <span>
+        c
+       </span>
+       <span>
+        d
+       </span>
+       <span>
+        e
+       </span>
+       <span>
+        f
+       </span>
+       <span>
+        g
+       </span>
+       <span>
+        h
+       </span>
+      </div>
+     </div>
+     <div class="demo-controls game-controls">
+      <button data-reset type="button">Reset</button>
+      <button data-undo disabled type="button">Undo</button>
+      <button data-open-settings type="button" aria-haspopup="dialog">Settings</button>
+      <button data-analyze hidden type="button">Run search</button>
+     </div>
+     <div class="history-navigation" aria-label="Board history navigation">
+      <button data-history-step="first" type="button" aria-label="Starting position" title="Starting position">|‹</button>
+      <button data-history-step="previous" type="button" aria-label="Previous move" title="Previous move">‹</button>
+      <button data-history-step="next" type="button" aria-label="Next move" title="Next move">›</button>
+      <button data-history-step="last" type="button" aria-label="Latest move" title="Latest move">›|</button>
+     </div>
+     <dialog class="game-dialog settings-dialog" data-settings-dialog aria-labelledby="settings-title">
+      <div class="dialog-heading">
+       <h2 id="settings-title">Settings</h2>
+       <form method="dialog"><button type="submit" aria-label="Close settings">×</button></form>
+      </div>
+      <div class="settings-fields">
+      <label>
+       Play as
+       <select data-player-color>
+        <option value="w" selected>White</option>
+        <option value="b">Black</option>
+       </select>
+      </label>
+      <label data-depth-control="">
+       Depth
+       <select data-depth="">
+        <option value="1">
+         1
+        </option>
+        <option selected="" value="2">
+         2
+        </option>
+        <option value="3">
+         3
+        </option>
+       </select>
+      </label>
+      </div>
+     </dialog>
+     <figcaption>
+      <p aria-live="polite" data-board-status="">
+       Select a square.
+      </p>
+      <p data-caption="" hidden="">
+      </p>
+     </figcaption>
+     <div class="game-detail" data-game-detail="">
+      <p aria-live="polite" data-detail="">
+      </p>
+     </div>
+     </div>
+     <div class="game-side-column">
+     <aside class="move-panel" aria-label="Game moves">
+      <div class="game-result" data-game-result role="status" hidden>
+       <strong data-result-title></strong>
+       <span data-result-reason></span>
+      </div>
+      <button class="history-heading" data-open-history type="button" aria-haspopup="dialog">
+       <span>Move history</span><span aria-hidden="true">↗</span>
+      </button>
+      <div class="move-table-heading" aria-hidden="true"><span>#</span><span>White</span><span>Black</span></div>
+      <div class="move-list" data-move-list aria-label="Move history"></div>
+     </aside>
+     <section class="promotion promotion-panel" data-promotion hidden aria-labelledby="promotion-title">
+      <h2 id="promotion-title">Promote pawn</h2>
+      <div class="promotion-options">
+       <button data-promote="q" type="button">Queen</button>
+       <button data-promote="r" type="button">Rook</button>
+       <button data-promote="b" type="button">Bishop</button>
+       <button data-promote="n" type="button">Knight</button>
+      </div>
+      <button data-promote="cancel" type="button">Cancel</button>
+     </section>
+     </div>
+     <dialog class="game-dialog history-dialog" data-history-dialog aria-labelledby="history-title">
+      <div class="dialog-heading">
+       <h2 id="history-title">Move history</h2>
+       <form method="dialog"><button type="submit" aria-label="Close move history">×</button></form>
+      </div>
+      <div class="game-result" data-game-result role="status" hidden>
+       <strong data-result-title></strong>
+       <span data-result-reason></span>
+      </div>
+      <div class="move-table-heading" aria-hidden="true"><span>#</span><span>White</span><span>Black</span></div>
+      <div class="move-list" data-move-list aria-label="Move history"></div>
+      <div class="history-navigation" aria-label="Move history navigation">
+       <button data-history-step="first" type="button" aria-label="Starting position" title="Starting position">|‹</button>
+       <button data-history-step="previous" type="button" aria-label="Previous move" title="Previous move">‹</button>
+       <button data-history-step="next" type="button" aria-label="Next move" title="Next move">›</button>
+       <button data-history-step="last" type="button" aria-label="Latest move" title="Latest move">›|</button>
+      </div>
+      <form method="dialog"><button class="dialog-new-game" data-new-game type="submit" hidden>New game</button></form>
+     </dialog>
+    </figure>
+    <h2 id="about-this-engine">
+     About this engine
+    </h2>
+    <p>
+     The browser search adapts Zhang Zeyu's minimax and alpha-beta algorithm to current JavaScript APIs and uses the C++ project's PeSTO table values. It is not the native C++ executable. It runs entirely in the browser with no server, database or account.
+    </p>
+    <p>
+     <a href="../index.html#curriculum">
+      Return to the tutorial
+     </a>
+     ·
+     <a href="https://github.com/zeyu2001/chess-ai">
+      JavaScript project
+     </a>
+     ·
+     <a href="../notices.txt">
+      Third-party notices
+     </a>
+     .
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../tutorial/optimization/index.html">
+      ← Engine optimization
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#about-this-engine">
+        About this engine
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../js/chess.js">
+  </script>
+  <script defer="True" src="../js/site.js">
+  </script>
+ </body>
+</html>

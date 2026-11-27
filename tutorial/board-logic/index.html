@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Board logic | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Board logic
+    </h1>
+    <p>
+     Now that we have a representation, we need operations that read and update it. The board module owns these operations; it does not decide which move is best.
+    </p>
+    <h2 id="initialize-the-board">
+     Initialize the board
+    </h2>
+    <div class="lesson-split">
+     <div>
+      <p>
+       The initialize_board function creates a consistent starting state. Fill the first rank with White's major pieces, the second with pawns, ranks three through six with empty squares, and the last two ranks with Black's pieces. Queens begin on d1 and d8.
+      </p>
+      <p>
+       Next, set White to move, enable all four castling rights, clear the en passant target and initialize the clocks to zero and one respectively. Copy exactly 64 entries into the board.
+      </p>
+      <p>
+       The print_board function reads that same array in reverse rank order, from rank eight down to rank one. This displays White at the bottom without changing how the board is stored.
+      </p>
+     </div>
+     <figure class="chess-demo" data-chess-demo='{"position":"start","mode":"static"}'>
+      <h3 class="demo-title" hidden="">
+      </h3>
+      <div class="demo-controls" data-evaluation-controls="" hidden="">
+       <label>
+        Piece
+        <select data-piece="">
+         <option value="P">
+          Pawn
+         </option>
+         <option selected="" value="N">
+          Knight
+         </option>
+         <option value="B">
+          Bishop
+         </option>
+         <option value="R">
+          Rook
+         </option>
+         <option value="Q">
+          Queen
+         </option>
+         <option value="K">
+          King
+         </option>
+        </select>
+       </label>
+       <label>
+        Phase
+        <select data-phase="">
+         <option value="mg">
+          Middlegame
+         </option>
+         <option value="eg">
+          Endgame
+         </option>
+        </select>
+       </label>
+      </div>
+      <div class="board-frame">
+       <div aria-hidden="true" class="board-ranks">
+        <span>
+         8
+        </span>
+        <span>
+         7
+        </span>
+        <span>
+         6
+        </span>
+        <span>
+         5
+        </span>
+        <span>
+         4
+        </span>
+        <span>
+         3
+        </span>
+        <span>
+         2
+        </span>
+        <span>
+         1
+        </span>
+       </div>
+       <div aria-label="Chess demonstration" class="demo-board" role="group">
+        <div class="fallback-board">
+        </div>
+       </div>
+       <div aria-hidden="true" class="board-files">
+        <span>
+         a
+        </span>
+        <span>
+         b
+        </span>
+        <span>
+         c
+        </span>
+        <span>
+         d
+        </span>
+        <span>
+         e
+        </span>
+        <span>
+         f
+        </span>
+        <span>
+         g
+        </span>
+        <span>
+         h
+        </span>
+       </div>
+      </div>
+      <div class="demo-controls">
+       <button data-reset="" type="button">
+        Reset
+       </button>
+       <button data-undo="" disabled="" hidden="" type="button">
+        Undo
+       </button>
+       <label data-depth-control="" hidden="">
+        Depth
+        <select data-depth="">
+         <option value="1">
+          1
+         </option>
+         <option selected="" value="2">
+          2
+         </option>
+        </select>
+       </label>
+       <button data-analyze="" hidden="" type="button">
+        Run search
+       </button>
+      </div>
+      <figcaption>
+       <p aria-live="polite" data-board-status="">
+        Select a square.
+       </p>
+       <p data-caption="" hidden="">
+       </p>
+      </figcaption>
+      <div class="promotion" data-promotion="" hidden="">
+       <p>
+        Promote to:
+       </p>
+       <button data-promote="q" type="button">
+        Queen
+       </button>
+       <button data-promote="r" type="button">
+        Rook
+       </button>
+       <button data-promote="b" type="button">
+        Bishop
+       </button>
+       <button data-promote="n" type="button">
+        Knight
+       </button>
+       <button data-promote="cancel" type="button">
+        Cancel
+       </button>
+      </div>
+      <div class="game-detail" data-game-detail="" hidden="">
+       <p aria-live="polite" data-detail="">
+       </p>
+       <p aria-label="Move history" data-history="">
+       </p>
+      </div>
+     </figure>
+    </div>
+    <h2 id="convert-coordinates-and-locate-the-king">
+     Convert coordinates and locate the king
+    </h2>
+    <p>
+     The player sees e2, while the engine sees index 12. The sq_to_algebraic helper converts an index into its file letter and rank digit. Its reverse, algebaraic_to_sq (the spelling in the project), validates the two characters and reconstructs the index; invalid coordinates return -1.
+    </p>
+    <p>
+     The find_king function chooses the piece code for the requested color and scans all 64 squares until it finds that king. It returns the square index or -1 if absent. Full game positions require both kings; isolated teaching diagrams need not have them.
+    </p>
+    <h2 id="is-a-square-under-attack">
+     Is a square under attack?
+    </h2>
+    <div class="lesson-split">
+     <div>
+      <p>
+       The is_sq_attacked function answers a question about one square and one attacking color. Start at the square being tested and work outward:
+      </p>
+      <ol>
+       <li>
+        Check the eight knight offsets for a knight of the attacking color.
+       </li>
+       <li>
+        Look back along the two possible pawn attack diagonals.
+       </li>
+       <li>
+        Inspect the eight neighboring squares for the enemy king.
+       </li>
+       <li>
+        Trace diagonal rays for bishops or queens, and straight rays for rooks or queens. Stop at the first occupied square on each ray.
+       </li>
+      </ol>
+      <p>
+       Return true as soon as an attacker is found; otherwise return false. The board here shows the related idea of squares controlled by a bishop. A friendly pawn can be defended even when the bishop cannot move onto its square.
+      </p>
+      <p>
+       The is_in_check function combines find_king and is_sq_attacked: locate the king and ask if the opposing color attacks that square.
+      </p>
+     </div>
+     <figure class="chess-demo" data-chess-demo='{"position":{"d4":"wB","f6":"bR","b2":"wP","g4":"bK"},"mode":"attack","origin":"d4"}'>
+      <h3 class="demo-title" hidden="">
+      </h3>
+      <div class="demo-controls" data-evaluation-controls="" hidden="">
+       <label>
+        Piece
+        <select data-piece="">
+         <option value="P">
+          Pawn
+         </option>
+         <option selected="" value="N">
+          Knight
+         </option>
+         <option value="B">
+          Bishop
+         </option>
+         <option value="R">
+          Rook
+         </option>
+         <option value="Q">
+          Queen
+         </option>
+         <option value="K">
+          King
+         </option>
+        </select>
+       </label>
+       <label>
+        Phase
+        <select data-phase="">
+         <option value="mg">
+          Middlegame
+         </option>
+         <option value="eg">
+          Endgame
+         </option>
+        </select>
+       </label>
+      </div>
+      <div class="board-frame">
+       <div aria-hidden="true" class="board-ranks">
+        <span>
+         8
+        </span>
+        <span>
+         7
+        </span>
+        <span>
+         6
+        </span>
+        <span>
+         5
+        </span>
+        <span>
+         4
+        </span>
+        <span>
+         3
+        </span>
+        <span>
+         2
+        </span>
+        <span>
+         1
+        </span>
+       </div>
+       <div aria-label="Chess demonstration" class="demo-board" role="group">
+        <div class="fallback-board">
+        </div>
+       </div>
+       <div aria-hidden="true" class="board-files">
+        <span>
+         a
+        </span>
+        <span>
+         b
+        </span>
+        <span>
+         c
+        </span>
+        <span>
+         d
+        </span>
+        <span>
+         e
+        </span>
+        <span>
+         f
+        </span>
+        <span>
+         g
+        </span>
+        <span>
+         h
+        </span>
+       </div>
+      </div>
+      <div class="demo-controls">
+       <button data-reset="" type="button">
+        Reset
+       </button>
+       <button data-undo="" disabled="" hidden="" type="button">
+        Undo
+       </button>
+       <label data-depth-control="" hidden="">
+        Depth
+        <select data-depth="">
+         <option value="1">
+          1
+         </option>
+         <option selected="" value="2">
+          2
+         </option>
+        </select>
+       </label>
+       <button data-analyze="" hidden="" type="button">
+        Run search
+       </button>
+      </div>
+      <figcaption>
+       <p aria-live="polite" data-board-status="">
+        Select a square.
+       </p>
+       <p data-caption="" hidden="">
+       </p>
+      </figcaption>
+      <div class="promotion" data-promotion="" hidden="">
+       <p>
+        Promote to:
+       </p>
+       <button data-promote="q" type="button">
+        Queen
+       </button>
+       <button data-promote="r" type="button">
+        Rook
+       </button>
+       <button data-promote="b" type="button">
+        Bishop
+       </button>
+       <button data-promote="n" type="button">
+        Knight
+       </button>
+       <button data-promote="cancel" type="button">
+        Cancel
+       </button>
+      </div>
+      <div class="game-detail" data-game-detail="" hidden="">
+       <p aria-live="polite" data-detail="">
+       </p>
+       <p aria-label="Move history" data-history="">
+       </p>
+      </div>
+     </figure>
+    </div>
+    <h2 id="apply-a-move">
+     Apply a move
+    </h2>
+    <p>
+     The make_move function receives an already validated action. Read the moving piece before clearing its original square. Put it at the destination, replacing a captured piece if necessary. Special flags determine whether to remove an en passant pawn, replace a promoted pawn or reposition a castling rook.
+    </p>
+    <p>
+     The visible move is only part of the update. Revoke castling permissions after the relevant king or rook moves or the rook is captured. Clear the old en passant target, creating a new one only after a two-square pawn move. Reset the half-move clock for pawn moves and captures; otherwise increment it. Finally, increment the full-move number after Black and switch the turn.
+    </p>
+    <h2 id="check-your-logic">
+     Check your logic
+    </h2>
+    <p>
+     After e2–e4, the pawn should occupy e4, e2 should be empty, the temporary en passant target should be e3 and Black should be next. A move must update these together.
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../tutorial/board-representation/index.html">
+      ← Board representation
+     </a>
+     <a href="../../tutorial/piece-movement/index.html">
+      Piece movement →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#initialize-the-board">
+        Initialize the board
+       </a>
+      </li>
+      <li>
+       <a href="#convert-coordinates-and-locate-the-king">
+        Convert coordinates and locate the king
+       </a>
+      </li>
+      <li>
+       <a href="#is-a-square-under-attack">
+        Is a square under attack?
+       </a>
+      </li>
+      <li>
+       <a href="#apply-a-move">
+        Apply a move
+       </a>
+      </li>
+      <li>
+       <a href="#check-your-logic">
+        Check your logic
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../../js/chess.js">
+  </script>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>

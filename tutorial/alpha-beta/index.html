@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Alpha-beta pruning | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Alpha-beta pruning
+    </h1>
+    <p>
+     We know how to evaluate a tree, but many of its branches cannot change the final decision. Alpha-beta pruning recognizes these branches early, allowing the engine to search fewer positions while preserving the minimax result at the same depth.
+    </p>
+    <h2 id="when-is-a-branch-no-longer-useful">
+     When is a branch no longer useful?
+    </h2>
+    <p>
+     Suppose MAX already has a branch that guarantees a score of 3. The next branch is controlled by MIN. As soon as MIN discovers a choice worth 2, that branch can return at most 2. There is no reason for MAX to choose it, even if its other leaves are worth much more.
+    </p>
+    <figure class="tree-demo" data-tree="prune">
+     <div class="tree-root">
+      MAX
+      <output data-root-score="">
+       ?
+      </output>
+     </div>
+     <div class="tree-branches">
+      <div class="tree-branch">
+       <div>
+        MIN A
+        <output data-branch="0">
+         ?
+        </output>
+       </div>
+       <div class="tree-leaves">
+        <label>
+         <input aria-label="Branch 1, leaf 1" data-leaf="0" max="100" min="-100" type="number" value="3"/>
+        </label>
+        <label>
+         <input aria-label="Branch 1, leaf 2" data-leaf="1" max="100" min="-100" type="number" value="5"/>
+        </label>
+        <label>
+         <input aria-label="Branch 1, leaf 3" data-leaf="2" max="100" min="-100" type="number" value="6"/>
+        </label>
+       </div>
+      </div>
+      <div class="tree-branch">
+       <div>
+        MIN B
+        <output data-branch="1">
+         ?
+        </output>
+       </div>
+       <div class="tree-leaves">
+        <label>
+         <input aria-label="Branch 2, leaf 1" data-leaf="3" max="100" min="-100" type="number" value="2"/>
+        </label>
+        <label>
+         <input aria-label="Branch 2, leaf 2" data-leaf="4" max="100" min="-100" type="number" value="9"/>
+        </label>
+        <label>
+         <input aria-label="Branch 2, leaf 3" data-leaf="5" max="100" min="-100" type="number" value="8"/>
+        </label>
+       </div>
+      </div>
+      <div class="tree-branch">
+       <div>
+        MIN C
+        <output data-branch="2">
+         ?
+        </output>
+       </div>
+       <div class="tree-leaves">
+        <label>
+         <input aria-label="Branch 3, leaf 1" data-leaf="6" max="100" min="-100" type="number" value="4"/>
+        </label>
+        <label>
+         <input aria-label="Branch 3, leaf 2" data-leaf="7" max="100" min="-100" type="number" value="7"/>
+        </label>
+        <label>
+         <input aria-label="Branch 3, leaf 3" data-leaf="8" max="100" min="-100" type="number" value="1"/>
+        </label>
+       </div>
+      </div>
+     </div>
+     <p aria-live="polite" data-tree-status="">
+     </p>
+     <div class="demo-controls">
+      <button data-back="">
+       Back
+      </button>
+      <button data-next="">
+       Next
+      </button>
+      <button data-run="">
+       Run all
+      </button>
+      <button data-reset-tree="">
+       Restart trace
+      </button>
+      <label>
+       <input data-reverse="" type="checkbox"/>
+       Reverse order
+      </label>
+     </div>
+    </figure>
+    <p>
+     Step through the tree. After branch A establishes 3, the first leaf of branch B establishes an upper bound of 2. The remaining leaves of B are skipped. Reverse the order and compare how much work is needed. The chosen value stays the same even when the number of examined leaves changes.
+    </p>
+    <h2 id="keep-two-bounds">
+     Keep two bounds
+    </h2>
+    <p>
+     Alpha is the best lower bound MAX has established. Beta is the best upper bound MIN has established. A branch is no longer useful when the lower bound reaches or exceeds the upper bound. A cutoff is not a guess that a position looks bad; it follows from a bound already established by the search.
+    </p>
+    <h2 id="how-the-engine-adds-pruning-to-negamax">
+     How the engine adds pruning to Negamax
+    </h2>
+    <ol>
+     <li>
+      Start the root search with a very wide window, so no candidate is excluded prematurely.
+     </li>
+     <li>
+      In each recursive call, generate legal moves and handle terminal positions and the depth limit as before.
+     </li>
+     <li>
+      Search each child with the window reversed and negated because the player perspective changes.
+     </li>
+     <li>
+      Negate the returned child score. If it reaches or exceeds beta, stop searching the remaining siblings and return beta.
+     </li>
+     <li>
+      Otherwise, raise alpha if the score improves the best lower bound. Continue until all necessary children have been examined.
+     </li>
+     <li>
+      Return alpha at the end of the search.
+     </li>
+    </ol>
+    <p>
+     The engine uses a fail-hard cutoff, so an individual bounded subtree may return a bound rather than its exact independent score. The root decision remains correct under the standard minimax assumptions.
+    </p>
+    <h2 id="check-that-pruning-preserves-the-result">
+     Check that pruning preserves the result
+    </h2>
+    <p>
+     Set the first branch leaves to 10, 11 and 12. Compare the root value with the unpruned tree on the previous page. With the other leaves unchanged, both return 10. Count the leaves inspected rather than assuming pruning always saves the same amount of work.
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../tutorial/negamax/index.html">
+      ← Minimax and Negamax
+     </a>
+     <a href="../../tutorial/best-move/index.html">
+      Finding the best move →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#when-is-a-branch-no-longer-useful">
+        When is a branch no longer useful?
+       </a>
+      </li>
+      <li>
+       <a href="#keep-two-bounds">
+        Keep two bounds
+       </a>
+      </li>
+      <li>
+       <a href="#how-the-engine-adds-pruning-to-negamax">
+        How the engine adds pruning to Negamax
+       </a>
+      </li>
+      <li>
+       <a href="#check-that-pruning-preserves-the-result">
+        Check that pruning preserves the result
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../../js/chess.js">
+  </script>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Board representation | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Board representation
+    </h1>
+    <p>
+     The first problem is not how to play chess. It is how to describe a chess position so that a computer can reason about it. A picture of a board tells us what the position looks like; the engine needs data it can inspect and change.
+    </p>
+    <h2 id="represent-the-pieces">
+     Represent the pieces
+    </h2>
+    <p>
+     Assign a small integer to every piece. Zero represents an empty square, 1–6 represent white pieces and 7–12 represent black pieces. Both colors use the same ordering: pawn, knight, bishop, rook, queen, king.
+    </p>
+    <table>
+     <thead>
+      <tr>
+       <th>
+        Piece
+       </th>
+       <th style="text-align:right">
+        White
+       </th>
+       <th style="text-align:right">
+        Black
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <td>
+        Pawn
+       </td>
+       <td style="text-align:right">
+        1
+       </td>
+       <td style="text-align:right">
+        7
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Knight
+       </td>
+       <td style="text-align:right">
+        2
+       </td>
+       <td style="text-align:right">
+        8
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Bishop
+       </td>
+       <td style="text-align:right">
+        3
+       </td>
+       <td style="text-align:right">
+        9
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Rook
+       </td>
+       <td style="text-align:right">
+        4
+       </td>
+       <td style="text-align:right">
+        10
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Queen
+       </td>
+       <td style="text-align:right">
+        5
+       </td>
+       <td style="text-align:right">
+        11
+       </td>
+      </tr>
+      <tr>
+       <td>
+        King
+       </td>
+       <td style="text-align:right">
+        6
+       </td>
+       <td style="text-align:right">
+        12
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <p>
+     An enumeration lets us give these numbers meaningful names. The piece_color helper identifies which range a number belongs to; piece_type returns the kind of piece, subtracting six for black pieces. Empty squares have no color or piece type. This lets the same movement logic work for both sides.
+    </p>
+    <h2 id="represent-the-squares">
+     Represent the squares
+    </h2>
+    <div class="lesson-split">
+     <div>
+      <p>
+       Use a one-dimensional array of 64 entries. Number the squares from a1 to h8, moving across each rank before moving up to the next rank.
+      </p>
+      <p>
+       We need three coordinate helpers:
+      </p>
+      <ul>
+       <li>
+        <strong>
+         rank_of:
+        </strong>
+        divide the index by eight and discard the remainder.
+       </li>
+       <li>
+        <strong>
+         file_of:
+        </strong>
+        take the remainder after dividing by eight.
+       </li>
+       <li>
+        <strong>
+         sq_of:
+        </strong>
+        multiply the rank by eight and add the file.
+       </li>
+      </ul>
+      <p>
+       For b2, both internal coordinates are 1, so the index is 9. For h8, both are 7, so the index is 63. Keeping rank and file separate also prevents a move from wrapping around the edge of the board.
+      </p>
+      <p>
+       Try selecting a1, h1, a2 and h8. Notice how the index changes.
+      </p>
+     </div>
+     <figure class="chess-demo" data-chess-demo='{"position":{},"mode":"coordinates","origin":"a1"}'>
+      <h3 class="demo-title" hidden="">
+      </h3>
+      <div class="demo-controls" data-evaluation-controls="" hidden="">
+       <label>
+        Piece
+        <select data-piece="">
+         <option value="P">
+          Pawn
+         </option>
+         <option selected="" value="N">
+          Knight
+         </option>
+         <option value="B">
+          Bishop
+         </option>
+         <option value="R">
+          Rook
+         </option>
+         <option value="Q">
+          Queen
+         </option>
+         <option value="K">
+          King
+         </option>
+        </select>
+       </label>
+       <label>
+        Phase
+        <select data-phase="">
+         <option value="mg">
+          Middlegame
+         </option>
+         <option value="eg">
+          Endgame
+         </option>
+        </select>
+       </label>
+      </div>
+      <div class="board-frame">
+       <div aria-hidden="true" class="board-ranks">
+        <span>
+         8
+        </span>
+        <span>
+         7
+        </span>
+        <span>
+         6
+        </span>
+        <span>
+         5
+        </span>
+        <span>
+         4
+        </span>
+        <span>
+         3
+        </span>
+        <span>
+         2
+        </span>
+        <span>
+         1
+        </span>
+       </div>
+       <div aria-label="Chess demonstration" class="demo-board" role="group">
+        <div class="fallback-board">
+        </div>
+       </div>
+       <div aria-hidden="true" class="board-files">
+        <span>
+         a
+        </span>
+        <span>
+         b
+        </span>
+        <span>
+         c
+        </span>
+        <span>
+         d
+        </span>
+        <span>
+         e
+        </span>
+        <span>
+         f
+        </span>
+        <span>
+         g
+        </span>
+        <span>
+         h
+        </span>
+       </div>
+      </div>
+      <div class="demo-controls">
+       <button data-reset="" type="button">
+        Reset
+       </button>
+       <button data-undo="" disabled="" hidden="" type="button">
+        Undo
+       </button>
+       <label data-depth-control="" hidden="">
+        Depth
+        <select data-depth="">
+         <option value="1">
+          1
+         </option>
+         <option selected="" value="2">
+          2
+         </option>
+        </select>
+       </label>
+       <button data-analyze="" hidden="" type="button">
+        Run search
+       </button>
+      </div>
+      <figcaption>
+       <p aria-live="polite" data-board-status="">
+        Select a square.
+       </p>
+       <p data-caption="" hidden="">
+       </p>
+      </figcaption>
+      <div class="promotion" data-promotion="" hidden="">
+       <p>
+        Promote to:
+       </p>
+       <button data-promote="q" type="button">
+        Queen
+       </button>
+       <button data-promote="r" type="button">
+        Rook
+       </button>
+       <button data-promote="b" type="button">
+        Bishop
+       </button>
+       <button data-promote="n" type="button">
+        Knight
+       </button>
+       <button data-promote="cancel" type="button">
+        Cancel
+       </button>
+      </div>
+      <div class="game-detail" data-game-detail="" hidden="">
+       <p aria-live="polite" data-detail="">
+       </p>
+       <p aria-label="Move history" data-history="">
+       </p>
+      </div>
+     </figure>
+    </div>
+    <h2 id="store-the-complete-position">
+     Store the complete position
+    </h2>
+    <p>
+     Pieces alone cannot tell us every legal move. Two visually identical positions can have different castling permissions or en passant opportunities. The Board structure holds the extra information.
+    </p>
+    <table>
+     <thead>
+      <tr>
+       <th>
+        Field
+       </th>
+       <th>
+        Why we need it
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <td>
+        squares
+       </td>
+       <td>
+        The 64 piece codes
+       </td>
+      </tr>
+      <tr>
+       <td>
+        side_to_move
+       </td>
+       <td>
+        The player allowed to act
+       </td>
+      </tr>
+      <tr>
+       <td>
+        castling_rights
+       </td>
+       <td>
+        Which of the four castling permissions remain
+       </td>
+      </tr>
+      <tr>
+       <td>
+        ep_square_number
+       </td>
+       <td>
+        The temporary en passant destination, or -1
+       </td>
+      </tr>
+      <tr>
+       <td>
+        half_move_clock
+       </td>
+       <td>
+        Plies since a pawn move or capture
+       </td>
+      </tr>
+      <tr>
+       <td>
+        full_move_number
+       </td>
+       <td>
+        The move number, incremented after Black moves
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <p>
+     Four independent castling permissions fit into a bitmask. Assign them values 1, 2, 4 and 8; all four enabled gives 15. Clearing one bit removes just that permission.
+    </p>
+    <h2 id="describe-an-action">
+     Describe an action
+    </h2>
+    <p>
+     The Move structure records the origin, destination, captured piece, promoted piece and special-move flag. Normal moves have flag 0; castling, en passant and promotion use 1, 2 and 3. The record describes what to do, not a complete previous state. When searching, we copy the entire Board before applying a move so that every permission and counter stays independent.
+    </p>
+    <h2 id="check-your-model">
+     Check your model
+    </h2>
+    <p>
+     Can you determine the index of e4? Can two identical piece arrangements have different legal moves? The answers are 28 and yes: state includes permissions and turn information as well as placement.
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../tutorial/getting-started/index.html">
+      ← Getting started
+     </a>
+     <a href="../../tutorial/board-logic/index.html">
+      Board logic →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#represent-the-pieces">
+        Represent the pieces
+       </a>
+      </li>
+      <li>
+       <a href="#represent-the-squares">
+        Represent the squares
+       </a>
+      </li>
+      <li>
+       <a href="#store-the-complete-position">
+        Store the complete position
+       </a>
+      </li>
+      <li>
+       <a href="#describe-an-action">
+        Describe an action
+       </a>
+      </li>
+      <li>
+       <a href="#check-your-model">
+        Check your model
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../../js/chess.js">
+  </script>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>

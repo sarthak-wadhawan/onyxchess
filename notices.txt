@@ -1,0 +1,27 @@
+# Third-party notices
+
+The browser AI search is adapted from Zhang Zeyu's `chess-ai` minimax/alpha-beta implementation: https://github.com/zeyu2001/chess-ai (main branch, js/main.js). It uses modern chess.js calls, deterministic ordering and the supplied C++ project's PeSTO values instead of the upstream incremental Sunfish evaluator. The original upstream DOM/game code is not bundled. No claim is made that it is the same engine as the C++ code.
+
+MIT License
+
+Copyright (c) 2020 Zhang Zeyu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+This static version uses the existing standalone JavaScript rules implementation and no external runtime dependencies. The board palette follows the classic chessboard.js style; no chessboard.js code or piece images are bundled. PeSTO tables are sourced from the user-supplied eval.cpp; background: https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function.

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Position evaluation | OnyxChess
+  </title>
+  <link href="../../assets/logo.png" rel="icon"/>
+  <link href="../../css/style.css" rel="stylesheet"/>
+  <link href="../../css/chess.css" rel="stylesheet"/>
+ </head>
+ <body data-root="../../">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <header class="site-header">
+   <div class="onyx-header">
+    <a class="brand" href="../../index.html">
+     <img alt="" height="36" src="../../assets/logo.png" width="36"/>
+     <span>
+      onyxchess
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="header-nav">
+     <a class="tutorial-link" href="../../index.html#curriculum">
+      Tutorial
+     </a>
+     <a href="../../play/index.html">
+      Play chess
+     </a>
+     <button aria-label="Search topics" id="search-open" type="button">
+      ⌕
+      <span>
+       Search
+      </span>
+      <kbd>
+       Ctrl K
+      </kbd>
+     </button>
+     <details class="course-menu">
+      <summary aria-label="Open lesson menu">
+       <span aria-hidden="true" class="menu-icon">
+       </span>
+       <span>
+        Lessons
+       </span>
+      </summary>
+      <div class="menu-panel">
+       <ol>
+        <li>
+         <a href="../../tutorial/getting-started/index.html">
+          Getting started
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-representation/index.html">
+          Board representation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/board-logic/index.html">
+          Board logic
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/piece-movement/index.html">
+          Piece movement
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/legal-moves/index.html">
+          Legal move generation
+         </a>
+        </li>
+        <li>
+         <a aria-current="page" href="../../tutorial/position-evaluation/index.html">
+          Position evaluation
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/negamax/index.html">
+          Minimax and Negamax
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/alpha-beta/index.html">
+          Alpha-beta pruning
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/best-move/index.html">
+          Finding the best move
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/game-loop/index.html">
+          Game loop
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorial/optimization/index.html">
+          Engine optimization
+         </a>
+        </li>
+        <li>
+         <a href="../../play/index.html">
+          Play chess
+         </a>
+        </li>
+       </ol>
+      </div>
+     </details>
+    </nav>
+   </div>
+  </header>
+  <div class="docs-shell">
+   <aside class="docs-sidebar">
+    <nav aria-label="Tutorial">
+     <ol>
+      <li>
+       <a href="../../tutorial/getting-started/index.html">
+        Getting started
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-representation/index.html">
+        Board representation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/board-logic/index.html">
+        Board logic
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/piece-movement/index.html">
+        Piece movement
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/legal-moves/index.html">
+        Legal move generation
+       </a>
+      </li>
+      <li>
+       <a aria-current="page" href="../../tutorial/position-evaluation/index.html">
+        Position evaluation
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/negamax/index.html">
+        Minimax and Negamax
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/alpha-beta/index.html">
+        Alpha-beta pruning
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/best-move/index.html">
+        Finding the best move
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/game-loop/index.html">
+        Game loop
+       </a>
+      </li>
+      <li>
+       <a href="../../tutorial/optimization/index.html">
+        Engine optimization
+       </a>
+      </li>
+      <li>
+       <a href="../../play/index.html">
+        Play chess
+       </a>
+      </li>
+     </ol>
+    </nav>
+   </aside>
+   <main class="docs-main lesson-content" id="main">
+    <h1>
+     Position evaluation
+    </h1>
+    <p>
+     The move generator can tell us which actions are possible, but not which are desirable. To choose between positions, the engine needs a scoring function. In this project, evaluate uses PeSTO: material values, square-specific adjustments and a blend between the middlegame and endgame.
+    </p>
+    <h2 id="why-counting-pieces-is-not-enough">
+     Why counting pieces is not enough
+    </h2>
+    <p>
+     Imagine two positions with the same pieces. In one, a knight sits in the corner; in the other, it occupies a central square. A material-only score treats them as equal, even though the knight's usefulness may differ. We need a way to represent positional preferences.
+    </p>
+    <p>
+     PeSTO provides tuned values in centipawns for each piece and each phase of the game. A centipawn is one hundredth of a conventional pawn unit. These are evaluation units, not a probability of winning.
+    </p>
+    <table>
+     <thead>
+      <tr>
+       <th>
+        Piece
+       </th>
+       <th style="text-align:right">
+        Middlegame
+       </th>
+       <th style="text-align:right">
+        Endgame
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <td>
+        Pawn
+       </td>
+       <td style="text-align:right">
+        82
+       </td>
+       <td style="text-align:right">
+        94
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Knight
+       </td>
+       <td style="text-align:right">
+        337
+       </td>
+       <td style="text-align:right">
+        281
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Bishop
+       </td>
+       <td style="text-align:right">
+        365
+       </td>
+       <td style="text-align:right">
+        297
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Rook
+       </td>
+       <td style="text-align:right">
+        477
+       </td>
+       <td style="text-align:right">
+        512
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Queen
+       </td>
+       <td style="text-align:right">
+        1025
+       </td>
+       <td style="text-align:right">
+        936
+       </td>
+      </tr>
+      <tr>
+       <td>
+        King
+       </td>
+       <td style="text-align:right">
+        20000
+       </td>
+       <td style="text-align:right">
+        20000
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <h2 id="give-each-square-a-value">
+     Give each square a value
+    </h2>
+    <div class="lesson-split">
+     <div>
+      <p>
+       Each piece has a table of 64 positional adjustments for the middlegame and another for the endgame. The function looks up an adjustment by piece type and square, then adds it to that piece's material value.
+      </p>
+      <p>
+       The board displays the actual table values from the supplied engine. Select a knight and compare a1 with d4. Change the phase to see how the preferred positions change. Then try the king: early-game safety and endgame activity are different priorities.
+      </p>
+      <p>
+       The board index starts at a1, but the tables are arranged from White's eighth rank downward. To use the same table for both colors, reverse the rank for White and leave Black's rank unchanged. The file remains the same.
+      </p>
+     </div>
+     <figure class="chess-demo" data-chess-demo='{"position":{"d4":"wN"},"mode":"pesto","origin":"d4","piece":"N"}'>
+      <h3 class="demo-title" hidden="">
+      </h3>
+      <div class="demo-controls" data-evaluation-controls="">
+       <label>
+        Piece
+        <select data-piece="">
+         <option value="P">
+          Pawn
+         </option>
+         <option selected="" value="N">
+          Knight
+         </option>
+         <option value="B">
+          Bishop
+         </option>
+         <option value="R">
+          Rook
+         </option>
+         <option value="Q">
+          Queen
+         </option>
+         <option value="K">
+          King
+         </option>
+        </select>
+       </label>
+       <label>
+        Phase
+        <select data-phase="">
+         <option value="mg">
+          Middlegame
+         </option>
+         <option value="eg">
+          Endgame
+         </option>
+        </select>
+       </label>
+      </div>
+      <div class="board-frame">
+       <div aria-hidden="true" class="board-ranks">
+        <span>
+         8
+        </span>
+        <span>
+         7
+        </span>
+        <span>
+         6
+        </span>
+        <span>
+         5
+        </span>
+        <span>
+         4
+        </span>
+        <span>
+         3
+        </span>
+        <span>
+         2
+        </span>
+        <span>
+         1
+        </span>
+       </div>
+       <div aria-label="Chess demonstration" class="demo-board" role="group">
+        <div class="fallback-board">
+        </div>
+       </div>
+       <div aria-hidden="true" class="board-files">
+        <span>
+         a
+        </span>
+        <span>
+         b
+        </span>
+        <span>
+         c
+        </span>
+        <span>
+         d
+        </span>
+        <span>
+         e
+        </span>
+        <span>
+         f
+        </span>
+        <span>
+         g
+        </span>
+        <span>
+         h
+        </span>
+       </div>
+      </div>
+      <div class="demo-controls">
+       <button data-reset="" type="button">
+        Reset
+       </button>
+       <button data-undo="" disabled="" hidden="" type="button">
+        Undo
+       </button>
+       <label data-depth-control="" hidden="">
+        Depth
+        <select data-depth="">
+         <option value="1">
+          1
+         </option>
+         <option selected="" value="2">
+          2
+         </option>
+        </select>
+       </label>
+       <button data-analyze="" hidden="" type="button">
+        Run search
+       </button>
+      </div>
+      <figcaption>
+       <p aria-live="polite" data-board-status="">
+        Select a square.
+       </p>
+       <p data-caption="" hidden="">
+       </p>
+      </figcaption>
+      <div class="promotion" data-promotion="" hidden="">
+       <p>
+        Promote to:
+       </p>
+       <button data-promote="q" type="button">
+        Queen
+       </button>
+       <button data-promote="r" type="button">
+        Rook
+       </button>
+       <button data-promote="b" type="button">
+        Bishop
+       </button>
+       <button data-promote="n" type="button">
+        Knight
+       </button>
+       <button data-promote="cancel" type="button">
+        Cancel
+       </button>
+      </div>
+      <div class="game-detail" data-game-detail="" hidden="">
+       <p aria-live="polite" data-detail="">
+       </p>
+       <p aria-label="Move history" data-history="">
+       </p>
+      </div>
+     </figure>
+    </div>
+    <h2 id="blend-the-two-phases">
+     Blend the two phases
+    </h2>
+    <p>
+     Switching abruptly from a middlegame score to an endgame score creates an artificial discontinuity. Instead, calculate both scores, then blend them using the remaining major and minor pieces.
+    </p>
+    <table>
+     <thead>
+      <tr>
+       <th>
+        Piece
+       </th>
+       <th style="text-align:right">
+        Phase contribution
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <td>
+        Pawn or king
+       </td>
+       <td style="text-align:right">
+        0
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Knight or bishop
+       </td>
+       <td style="text-align:right">
+        1
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Rook
+       </td>
+       <td style="text-align:right">
+        2
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Queen
+       </td>
+       <td style="text-align:right">
+        4
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <p>
+     A normal starting position has 24 phase points. Cap the total at 24 to account for extra promoted pieces. At phase 24 the middlegame weight is 100%; at phase zero the endgame weight is 100%. At phase 12, both scores contribute equally.
+    </p>
+    <p>
+     Suppose White's middlegame advantage is 80 and its endgame advantage is 20. Halfway between the phases, the blended advantage is 50 centipawns.
+    </p>
+    <h2 id="how-evaluate-works">
+     How evaluate works
+    </h2>
+    <ol>
+     <li>
+      Scan the 64 squares, ignoring empty squares.
+     </li>
+     <li>
+      Identify the type and color of each piece.
+     </li>
+     <li>
+      Look up material and position values for both phases; accumulate separate totals for White and Black.
+     </li>
+     <li>
+      Add the piece's phase contribution to the game phase.
+     </li>
+     <li>
+      Subtract Black's totals from White's totals and blend the phase scores using their relative weights.
+     </li>
+     <li>
+      Return the resulting score from the perspective of the current side to move. Negate the White-relative value when Black is active.
+     </li>
+    </ol>
+    <p>
+     Returning a side-relative score allows Negamax to reuse the same evaluator for either player. The symmetric initial position should score zero. Checkmate is handled separately by search; the positional score is only an estimate for nonterminal positions.
+    </p>
+    <p>
+     <a href="https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function">
+      PeSTO evaluation reference
+     </a>
+    </p>
+    <nav aria-label="Previous and next lesson" class="pagination">
+     <a href="../../tutorial/legal-moves/index.html">
+      ← Legal move generation
+     </a>
+     <a href="../../tutorial/negamax/index.html">
+      Minimax and Negamax →
+     </a>
+    </nav>
+   </main>
+   <aside class="docs-toc">
+    <nav aria-label="On this page">
+     <h2>
+      On this page
+     </h2>
+     <ul>
+      <li>
+       <a href="#why-counting-pieces-is-not-enough">
+        Why counting pieces is not enough
+       </a>
+      </li>
+      <li>
+       <a href="#give-each-square-a-value">
+        Give each square a value
+       </a>
+      </li>
+      <li>
+       <a href="#blend-the-two-phases">
+        Blend the two phases
+       </a>
+      </li>
+      <li>
+       <a href="#how-evaluate-works">
+        How evaluate works
+       </a>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+  </div>
+  <dialog id="search-dialog">
+   <form method="dialog">
+    <button aria-label="Close search">
+     Close ×
+    </button>
+   </form>
+   <label for="topic-search">
+    Search pages and topics
+   </label>
+   <input id="topic-search" placeholder="e.g. Negamax" type="search"/>
+   <div id="search-results">
+   </div>
+  </dialog>
+  <script defer="True" src="../../js/chess-engine.js">
+  </script>
+  <script defer="True" src="../../js/chess.js">
+  </script>
+  <script defer="True" src="../../js/site.js">
+  </script>
+ </body>
+</html>
